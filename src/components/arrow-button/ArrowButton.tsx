@@ -4,10 +4,11 @@ import styles from './ArrowButton.module.scss';
 export type OnClick = () => void;
 
 type arrowButton = {
-	state: boolean;
+	stateForm: boolean;
 	onOpen: OnClick;
 };
-export const ArrowButton = ({ state, onOpen }: arrowButton) => {
+
+export const ArrowButton = ({ stateForm, onOpen }: arrowButton) => {
 	return (
 		/* Не забываем указаывать role и aria-label атрибуты для интерактивных элементов */
 		<div
@@ -16,7 +17,7 @@ export const ArrowButton = ({ state, onOpen }: arrowButton) => {
 			tabIndex={0}
 			className={clsx({
 				[styles.container]: true,
-				[styles.container_open]: state,
+				[styles.container_open]: stateForm,
 			})}
 			onClick={onOpen}>
 			<img
@@ -24,7 +25,7 @@ export const ArrowButton = ({ state, onOpen }: arrowButton) => {
 				alt='иконка стрелочки'
 				className={clsx({
 					[styles.arrow]: true,
-					[styles.arrow_open]: state,
+					[styles.arrow_open]: stateForm,
 				})}
 			/>
 		</div>
