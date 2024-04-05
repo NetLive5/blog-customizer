@@ -27,19 +27,19 @@ export const ArticleParamsForm = ({ setArticleState }: ArticleStateProps) => {
 
 	const refForm = useRef<HTMLFormElement>(null);
 
-	function clickOutside(e: MouseEvent) {
-		if (
-			setIsOpen &&
-			refForm.current &&
-			!refForm.current.contains(e.target as Node)
-		) {
-			setIsOpen(false);
-		}
-	}
-
 	useEffect(() => {
 		function handleEscapeKey(event: KeyboardEvent) {
 			if (event.code === 'Escape') {
+				setIsOpen(false);
+			}
+		}
+
+		function clickOutside(e: MouseEvent) {
+			if (
+				setIsOpen &&
+				refForm.current &&
+				!refForm.current.contains(e.target as Node)
+			) {
 				setIsOpen(false);
 			}
 		}
