@@ -22,88 +22,98 @@ type ArticleStateProps = {
 };
 
 export const ArticleParamsForm = ({ setArticleState }: ArticleStateProps) => {
-	const [open, setOpen] = useState(false);
-	const [state, setState] = useState(defaultArticleState);
+	const [isOpen, setIsOpen] = useState(false);
+	const [stateParams, setStateParams] = useState(defaultArticleState);
 
-	const formRef = useRef<HTMLFormElement>(null);
+	const refForm = useRef<HTMLFormElement>(null);
+
+	function clickOutside(e: MouseEvent) {
+		if (
+			setIsOpen &&
+			refForm.current &&
+			!refForm.current.contains(e.target as Node)
+		) {
+			setIsOpen(false);
+		}
+	}
 
 	useEffect(() => {
 		function handleEscapeKey(event: KeyboardEvent) {
 			if (event.code === 'Escape') {
-				setOpen(false);
+				setIsOpen(false);
 			}
 		}
+
+		document.addEventListener('mousedown', clickOutside);
 		document.addEventListener('keydown', handleEscapeKey);
-		return () => document.removeEventListener('keydown', handleEscapeKey);
+		return () => {
+			document.removeEventListener('keydown', handleEscapeKey);
+			document.removeEventListener('mousedown', clickOutside);
+		};
 	}, []);
 
 	const handlerClickOpen = () => {
-		setOpen((prevState) => !prevState);
+		setIsOpen((prevState) => !prevState);
 	};
 
 	const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
-		setArticleState(state);
+		setArticleState(stateParams);
 	};
 
 	const handleReset = (e: FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
-		setState(defaultArticleState);
+		setStateParams(defaultArticleState);
 		setArticleState(defaultArticleState);
 	};
 
+	const handleOnChange =
+		(key: keyof typeof stateParams) => (item: OptionType) => {
+			setStateParams({ ...stateParams, [key]: item });
+		};
+
 	return (
 		<>
-			<ArrowButton stateForm={open} onOpen={handlerClickOpen} />
+			<ArrowButton stateForm={isOpen} onOpen={handlerClickOpen} />
 			<aside
+				ref={refForm}
 				className={clsx({
 					[styles.container]: true,
-					[styles.container_open]: open,
-				})}
-				ref={formRef}>
+					[styles.container_open]: isOpen,
+				})}>
 				<form
 					className={styles.form}
 					onSubmit={handleSubmit}
 					onReset={handleReset}>
 					<Select
 						title='Шрифт'
-						selected={state.fontFamilyOption}
-						onChange={(item: OptionType) => {
-							setState({ ...state, fontFamilyOption: item });
-						}}
+						selected={stateParams.fontFamilyOption}
+						onChange={handleOnChange('fontFamilyOption')}
 						options={fontFamilyOptions}
 					/>
 					<RadioGroup
 						title='Размер Шрифта'
 						name='Font Size'
-						selected={state.fontSizeOption}
-						onChange={(item: OptionType) => {
-							setState({ ...state, fontSizeOption: item });
-						}}
+						selected={stateParams.fontSizeOption}
+						onChange={handleOnChange('fontSizeOption')}
 						options={fontSizeOptions}></RadioGroup>
 					<Select
 						title='Цвет Шрифта'
-						selected={state.fontColor}
-						onChange={(item: OptionType) =>
-							setState({ ...state, fontColor: item })
-						}
+						selected={stateParams.fontColor}
+						onChange={handleOnChange('fontColor')}
 						options={fontColors}
 					/>
 					<Separator />
 					<Select
 						title='Цвет фона'
-						selected={state.backgroundColor}
-						onChange={(item: OptionType) =>
-							setState({ ...state, backgroundColor: item })
-						}
+						selected={stateParams.backgroundColor}
+						onChange={handleOnChange('backgroundColor')}
 						options={backgroundColors}
 					/>
 					<Select
 						title='Ширина контента'
-						selected={state.contentWidth}
-						onChange={(item: OptionType) =>
-							setState({ ...state, contentWidth: item })
-						}
+						selected={stateParams.contentWidth}
+						onChange={handleOnChange('contentWidth')}
 						options={contentWidthArr}
 					/>
 					<div className={styles.bottomContainer}>
